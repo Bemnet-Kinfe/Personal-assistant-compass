@@ -1,6 +1,7 @@
 from django import forms
 
 from .models import COLOR_CHOICES, Area, Task
+from .models import WeeklyCheckIn
 
 
 class TaskForm(forms.ModelForm):
@@ -43,5 +44,20 @@ class AreaForm(forms.ModelForm):
         if clash.exists():
             raise forms.ValidationError("You already have an area with that name.")
         return name
+
+
+class WeeklyGoalForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("label_suffix", "")
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = WeeklyCheckIn
+        fields = ["goal", "reflection"]
+        labels = {"goal": "What would make this week a win?", "reflection": "Notes for the week"}
+        widgets = {
+            "goal": forms.TextInput(attrs={"placeholder": "Finish the lit review draft and stay on top of grading"}),
+            "reflection": forms.Textarea(attrs={"rows": 2, "placeholder": "Anything to remember"}),
+        }
 
 

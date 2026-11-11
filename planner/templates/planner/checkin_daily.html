@@ -1,0 +1,43 @@
+{% extends "planner/base.html" %}{% load compass %}
+{% block title %}Daily check-in · {{ APP_NAME }}{% endblock %}
+{% block content %}
+<div class="stack">
+  <div class="sec-head"><div><span class="eyebrow">Check-ins</span><h1 style="font-size:clamp(28px,7vw,38px)">Daily check-in</h1>
+    <span class="muted" style="font-weight:700">About 15 minutes to close out today and set up {{ tomorrow|date:"l" }}</span></div>
+    <div class="seg"><a href="{% url 'checkin_daily' %}" style="text-decoration:none; padding:7px 14px; border-radius:11px; font-weight:800; background:var(--ink); color:#fff">Daily</a><a href="{% url 'checkin_weekly' %}" style="text-decoration:none; padding:7px 14px; border-radius:11px; font-weight:800; color:var(--muted)">Weekly</a></div></div>
+  {% if today_plan.checked_in_at %}<div class="banner">You finished today’s check-in at {{ today_plan.checked_in_at|time:"g:i A" }}. You can still make changes.</div>{% endif %}
+
+  <section class="card ritual"><div class="steps">
+    <div class="step"><div class="step-h"><span class="step-n">1</span><h3>Close out today</h3></div>
+      {% if close_out %}<div class="list">{% for task in close_out %}{% include "planner/partials/task_row.html" %}{% endfor %}</div>
+      {% else %}<span class="muted">Nothing was planned or due today.</span>{% endif %}</div>
+
+    <div class="step"><div class="step-h"><span class="step-n">2</span><h3>Carry over what didn’t happen</h3></div>
+      {% if carry %}<span>{% for t in carry %}{{ t.title }}{% if not forloop.last %} · {% endif %}{% endfor %}</span>
+        <form method="post" action="{% url 'carry_over' %}" hx-post="{% url 'carry_over' %}" hx-swap="none">{% csrf_token %}<button class="btn small primary" type="submit">Move {{ carry|length }} to tomorrow</button></form>
+      {% else %}<span class="muted">Nothing to carry over.</span>{% endif %}</div>
+
+    <div class="step"><div class="step-h"><span class="step-n">3</span><h3>Look at tomorrow</h3></div>
+      {% if tomorrow_events or tomorrow_summary.all_day %}
+        {% if tomorrow_summary.all_day %}<div class="allday" style="padding:0">{% for ev in tomorrow_summary.all_day %}<span style="--evc:{{ ev|event_color }}">{{ ev|event_label }} · {{ ev.title }}</span>{% endfor %}</div>{% endif %}
+        <div class="list">{% for ev in tomorrow_events %}{% include "planner/partials/event_row.html" %}{% endfor %}</div>
+      {% else %}<span class="muted">{% if connected %}Nothing on your calendar tomorrow.{% else %}No calendar events. Connect Google Calendar in Settings to see them here.{% endif %}</span>{% endif %}
+      <span class="muted num" style="font-weight:700">Tomorrow is {{ tomorrow_summary.used|mins }} of {{ tomorrow_summary.capacity|mins }} full · {{ tomorrow_summary.word }}</span></div>
+
+    <div class="step"><div class="step-h"><span class="step-n">4</span><h3>Star tomorrow’s top 3</h3><span class="muted num" style="font-weight:800">{{ top_ids|length }}/3</span></div>
+      {% if open_tasks %}<div class="list">{% for task in open_tasks %}{% include "planner/partials/task_row.html" with star_date=tomorrow %}{% endfor %}</div>
+      {% else %}<span class="muted">No open tasks.</span>{% endif %}</div>
+
+    <div class="step"><div class="step-h"><span class="step-n">5</span><h3>Plan tomorrow</h3></div>
+      <div class="row"><a class="btn small" href="{% url 'plan' %}?date={{ tomorrow|date:'Y-m-d' }}">Open tomorrow’s plan</a>
+      </div></div>
+
+    <form class="step" method="post" action="{% url 'finish_day' %}" hx-post="{% url 'finish_day' %}" hx-swap="none">{% csrf_token %}
+      <div class="step-h"><span class="step-n">6</span><h3>One line about today</h3></div>
+      <label class="sr-only" for="reflection">How did today go?</label>
+      <textarea class="win text-input" id="reflection" name="reflection" rows="2" maxlength="1000" placeholder="What went well, what got in the way">{{ today_plan.reflection }}</textarea>
+      <div><button class="btn primary" type="submit">Finish check-in</button></div>
+    </form>
+  </div></section>
+</div>
+{% endblock %}

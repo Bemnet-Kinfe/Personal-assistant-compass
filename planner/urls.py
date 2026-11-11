@@ -3,6 +3,7 @@ from django.urls import path
 from .views import common
 from .views import tasks
 from .views import plan
+from .views import checkins
 
 urlpatterns = [
     path("", common.home, name="home"),
@@ -21,4 +22,9 @@ urlpatterns = [
     path("plan/add/", plan.plan_add, name="plan_add"),
     path("plan/entry/<int:pk>/remove/", plan.plan_remove, name="plan_remove"),
     path("plan/star/", plan.plan_star, name="plan_star"),
+    path("check-in/daily/", checkins.checkin_daily, name="checkin_daily"),
+    path("check-in/daily/carry/", checkins.carry_over, name="carry_over"),
+    path("check-in/daily/finish/", checkins.finish_day, name="finish_day"),
+    path("check-in/weekly/", checkins.checkin_weekly, name="checkin_weekly"),
+    path("tasks/<int:pk>/reschedule/", checkins.task_reschedule, name="task_reschedule"),
 ]
