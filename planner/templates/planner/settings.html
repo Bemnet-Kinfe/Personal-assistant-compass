@@ -1,0 +1,33 @@
+{% extends "planner/base.html" %}{% load socialaccount %}
+{% block title %}Settings · {{ APP_NAME }}{% endblock %}
+{% block content %}
+<div class="stack">
+  <div class="sec-head"><div><span class="eyebrow">Settings</span><h1 style="font-size:clamp(28px,7vw,38px)">Your Compass</h1></div>
+    <form method="post" action="{% url 'account_logout' %}">{% csrf_token %}<button class="btn small" type="submit">Sign out</button></form></div>
+  <p class="muted" style="margin:0; font-weight:700">Signed in as {{ user.email }}</p>
+
+
+  <section class="card">
+    <div class="ritual-top" style="padding:16px 16px 6px"><div><span class="eyebrow">Life areas</span><h2>Areas</h2></div></div>
+    <p class="muted" style="margin:0; padding:0 16px 8px; font-weight:600">Every task belongs to an area. Areas marked as personal time count toward the day’s balance.</p>
+    {% for a in areas %}
+    <form class="area-row" method="post" action="{% url 'area_save' a.pk %}" hx-post="{% url 'area_save' a.pk %}" hx-swap="none" style="--ac:var(--c-{{ a.color }})">{% csrf_token %}
+      <span class="color-dot" aria-hidden="true"></span>
+      <label class="sr-only" for="area-name-{{ a.pk }}">Name</label><input class="text-input" type="text" id="area-name-{{ a.pk }}" name="name" value="{{ a.name }}" maxlength="40" required>
+      <label class="sr-only" for="area-color-{{ a.pk }}">Color</label>
+      <select class="text-input" id="area-color-{{ a.pk }}" name="color">{% for v, l in new_area_form.fields.color.choices %}<option value="{{ v }}" {% if v == a.color %}selected{% endif %}>{{ l }}</option>{% endfor %}</select>
+      <label class="row" style="gap:6px; font-size:13px; font-weight:700" for="area-personal-{{ a.pk }}"><input type="checkbox" id="area-personal-{{ a.pk }}" name="is_personal" {% if a.is_personal %}checked{% endif %}> Personal</label>
+      <button class="btn small" type="submit">Save</button>
+      <button class="btn small danger" type="submit" formaction="{% url 'area_delete' a.pk %}" hx-post="{% url 'area_delete' a.pk %}" hx-confirm="Delete the {{ a.name }} area?" {% if a.task_count %}disabled title="Move or delete its {{ a.task_count }} tasks first"{% endif %}>Delete</button>
+    </form>
+    {% endfor %}
+    <form class="area-row" method="post" action="{% url 'area_add' %}" hx-post="{% url 'area_add' %}" hx-swap="none">{% csrf_token %}
+      <label class="sr-only" for="new-area-name">New area name</label><input class="text-input" type="text" id="new-area-name" name="name" maxlength="40" required placeholder="New area, e.g. Research">
+      <label class="sr-only" for="new-area-color">Color</label>
+      <select class="text-input" id="new-area-color" name="color">{% for v, l in new_area_form.fields.color.choices %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select>
+      <button class="btn small primary" type="submit">Add area</button>
+    </form>
+  </section>
+
+</div>
+{% endblock %}

@@ -27,6 +27,7 @@
   {% if not has_tasks %}
   <div class="card empty"><b>Welcome to {{ APP_NAME }}</b>
     <span>Add your first task to get started. Every task belongs to an area of your life, like Class or Lab work{% if user.is_authenticated %}, which you can rename in Settings{% endif %}.</span>
+    <div class="row"><a class="btn small primary" href="{% url 'task_new' %}" hx-get="{% url 'task_new' %}" hx-target="#modal">Add a task</a></div>
   </div>
   {% endif %}
 </div>

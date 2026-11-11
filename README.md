@@ -6,6 +6,7 @@ A personal planning assistant for a busy student life: tasks in every area of yo
 ## What it does
 
 - **Accounts.** Email and password sign-in, closed to strangers unless you open sign-up. Every account starts with life areas: Class, TA work, STEMPower, Lab work, Personal, Jobs, YBC and Work.
+- **Tasks and areas.** Add tasks in a pop-up with a due date, time estimate, priority and energy level. Filter by area, search, rename and recolor areas.
 
 ## How it's built
 
