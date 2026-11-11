@@ -9,6 +9,8 @@ from django.views.decorators.http import require_POST
 
 from ..models import DayPlan, PlanEntry, Task
 from ..services import days
+from ..models import CalendarSync
+from ..services import gcal
 from .common import changed, is_htmx, parse_date, toast_only
 
 
@@ -17,6 +19,9 @@ def plan(request):
     user, today = request.user, timezone.localdate()
     date = parse_date(request.GET.get("date"), today)
     ctx = {"nav": "plan", "date": date, "today": today}
+    gcal.ensure_fresh(user, date, days=1)
+    ctx["connected"] = gcal.is_connected(user)
+    ctx["sync"] = CalendarSync.objects.filter(user=user).first()
     ctx.update({
         "summary": days.summarize(user, date),
         "day_choices": [today + timedelta(days=n) for n in range(7)],
