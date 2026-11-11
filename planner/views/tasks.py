@@ -101,6 +101,9 @@ def settings_page(request):
         "connected": gcal.is_connected(user),
         "sync": CalendarSync.objects.filter(user=user).first(),
     }
+    from ..services import assistant
+
+    ctx["ai_left"] = assistant.remaining_today(user)
     return render(request, "planner/settings.html", ctx)
 
 

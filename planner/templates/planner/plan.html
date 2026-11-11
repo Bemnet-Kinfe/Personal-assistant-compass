@@ -17,6 +17,7 @@
   <div class="card health">
     <div class="health-top"><span class="verdict {{ summary.verdict }}"><i></i>{{ summary.word }}</span><span class="muted num" style="font-weight:700; font-size:13.5px">{{ summary.used|mins }} of {{ summary.capacity|mins }} filled</span></div>
     {% if summary.issues %}<ul class="issues">{% for lvl, text in summary.issues %}<li class="{{ lvl }}">{{ text }}</li>{% endfor %}</ul>{% endif %}
+    {% if ai_on|default:True %}<div><a class="btn small primary" href="{% url 'home' %}#assistant">Ask the assistant to plan {% if date == today %}today{% else %}{{ date|day_phrase }}{% endif %}</a></div>{% endif %}
   </div>
 
   {% if not connected %}

@@ -30,6 +30,7 @@
 
     <div class="step"><div class="step-h"><span class="step-n">5</span><h3>Plan tomorrow</h3></div>
       <div class="row"><a class="btn small" href="{% url 'plan' %}?date={{ tomorrow|date:'Y-m-d' }}">Open tomorrow’s plan</a>
+        <a class="btn small" href="{% url 'home' %}#assistant">Let the assistant plan it</a>
       </div></div>
 
     <form class="step" method="post" action="{% url 'finish_day' %}" hx-post="{% url 'finish_day' %}" hx-swap="none">{% csrf_token %}

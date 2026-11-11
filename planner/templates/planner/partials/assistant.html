@@ -1,0 +1,36 @@
+<section class="card asst" id="assistant">
+  <div class="asst-head"><span class="orb" aria-hidden="true"></span>
+    <div class="grow"><h2>Your assistant</h2><span class="muted" style="font-size:13px;font-weight:700">{% if ai_on %}Ask anything about your day · {{ ai_left }} left today{% else %}Add an OpenRouter key on the server to turn the assistant on{% endif %}</span></div>
+    {% if chat %}<form method="post" action="{% url 'assistant_clear' %}" hx-post="{% url 'assistant_clear' %}" hx-swap="none">{% csrf_token %}<button class="btn small" type="submit">New chat</button></form>{% endif %}
+  </div>
+  <div class="thread" id="thread" aria-live="polite">
+    {% if not chat %}<div class="msg bot">Hi{% if user.first_name %} {{ user.first_name }}{% endif %}! Tell me what’s on your plate and I’ll fit it around your calendar. I can add tasks, plan your day, block time on your calendar, and help with your daily and weekly check-ins. I’ll always show you changes before I make them.</div>{% endif %}
+    {% for m in chat %}
+      {% if m.role == "user" %}<div class="msg user">{{ m.content }}</div>
+      {% else %}
+        <div class="msg bot {% if m.is_error %}err{% endif %}">{{ m.content }}</div>
+        {% if m.changes %}
+        <form class="changes {% if m.status != 'pending' %}done{% endif %}" method="post" action="{% url 'assistant_apply' m.pk %}" hx-post="{% url 'assistant_apply' m.pk %}" hx-swap="none">{% csrf_token %}
+          <div class="row" style="justify-content:space-between"><span class="eyebrow">{% if m.status == "pending" %}Want me to make these changes?{% else %}Suggested changes{% endif %}</span>
+            {% if m.status == "applied" %}<span class="status-tag ok">Done</span>{% elif m.status == "skipped" %}<span class="status-tag no">Skipped</span>{% endif %}</div>
+          <ul>{% for c in m.changes %}<li>
+            {% if m.status == "pending" %}<input type="checkbox" name="change" value="{{ forloop.counter0 }}" id="ch-{{ m.pk }}-{{ forloop.counter0 }}" checked>
+            {% else %}<span aria-hidden="true">{% if forloop.counter0 in m.applied %}✓{% else %}·{% endif %}</span>{% endif %}
+            <label for="ch-{{ m.pk }}-{{ forloop.counter0 }}">{{ c.label }}</label></li>{% endfor %}</ul>
+          {% if m.status == "pending" %}<div class="row"><button class="btn small primary" type="submit">Do it</button>
+            <button class="btn small" type="submit" formaction="{% url 'assistant_skip' m.pk %}" hx-post="{% url 'assistant_skip' m.pk %}" hx-swap="none">Not now</button></div>{% endif %}
+        </form>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+    <div class="msg bot typing" id="typing"><span class="dots" aria-label="Thinking"><i></i><i></i><i></i></span></div>
+  </div>
+  {% if ai_on %}
+  <div class="suggest">{% for s in suggestions %}<button type="button" data-suggest="{{ s }}">{{ s }}</button>{% endfor %}<button type="button" data-suggest="Add a task: " data-fill="1">Add a task</button></div>
+  <form class="composer" id="ask-form" method="post" action="{% url 'assistant_ask' %}" hx-post="{% url 'assistant_ask' %}" hx-target="#assistant" hx-swap="outerHTML" hx-indicator="#typing" hx-disabled-elt="find button">{% csrf_token %}
+    <label class="sr-only" for="id_text">Message your assistant</label>
+    <textarea id="id_text" name="text" rows="1" maxlength="1500" required placeholder="“Grade psets by Thursday, about 3 hours” or “plan tomorrow”"></textarea>
+    <button type="submit" class="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button>
+  </form>
+  {% endif %}
+</section>
