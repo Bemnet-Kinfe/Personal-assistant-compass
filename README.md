@@ -8,6 +8,7 @@ A personal planning assistant for a busy student life: tasks in every area of yo
 - **Accounts.** Email and password sign-in, closed to strangers unless you open sign-up. Every account starts with life areas: Class, TA work, STEMPower, Lab work, Personal, Jobs, YBC and Work.
 - **Tasks and areas.** Add tasks in a pop-up with a due date, time estimate, priority and energy level. Filter by area, search, rename and recolor areas.
 - **Day plan.** Put tasks into the morning, midday, afternoon and evening. A meter shows how full each part is, and a balance check flags overbooking, forgotten deadlines, late-night deep work and days with no personal time. Star a top 3.
+- **Daily and weekly check-ins.** Close out the day, carry over what didn't happen, star tomorrow's top 3. Each week, set a goal, review deadlines and reschedule anything overdue.
 
 ## How it's built
 

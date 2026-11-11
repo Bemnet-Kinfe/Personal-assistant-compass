@@ -1,0 +1,44 @@
+{% extends "planner/base.html" %}{% load compass %}
+{% block title %}Weekly check-in · {{ APP_NAME }}{% endblock %}
+{% block content %}
+<div class="stack">
+  <div class="sec-head"><div><span class="eyebrow">Check-ins</span><h1 style="font-size:clamp(28px,7vw,38px)">Weekly check-in</h1>
+    <span class="muted" style="font-weight:700">Week of {{ monday|date:"F j" }}</span></div>
+    <div class="seg"><a href="{% url 'checkin_daily' %}" style="text-decoration:none; padding:7px 14px; border-radius:11px; font-weight:800; color:var(--muted)">Daily</a><a href="{% url 'checkin_weekly' %}" style="text-decoration:none; padding:7px 14px; border-radius:11px; font-weight:800; background:var(--ink); color:#fff">Weekly</a></div></div>
+  {% if week.completed_at %}<div class="banner">You finished this week’s check-in on {{ week.completed_at|date:"l" }}. You can still make changes.</div>{% endif %}
+
+  <section class="card ritual"><div class="steps">
+    <form class="step" id="week-form" method="post" hx-post="{% url 'checkin_weekly' %}" hx-swap="none">{% csrf_token %}
+      <div class="step-h"><span class="step-n">1</span><h3>Set the week’s goal</h3></div>
+      {% if last_week.goal %}<span class="muted" style="font-weight:600">Last week: “{{ last_week.goal }}”</span>{% endif %}
+      <div class="field">{{ form.goal.label_tag }}{{ form.goal }}{{ form.goal.errors }}</div>
+      <div class="field">{{ form.reflection.label_tag }}{{ form.reflection }}</div>
+      <div class="row"><button class="btn small" type="submit">Save</button></div>
+    </form>
+
+    <div class="step"><div class="step-h"><span class="step-n">2</span><h3>This week’s deadlines</h3></div>
+      {% if by_day %}<div class="list">{% for d, ts in by_day %}<div class="dayhead">{{ d|date:"l, M j" }}</div>{% for task in ts %}{% include "planner/partials/task_row.html" %}{% endfor %}{% endfor %}</div>
+      {% else %}<span class="muted">No deadlines this week yet.</span>{% endif %}</div>
+
+    <div class="step"><div class="step-h"><span class="step-n">3</span><h3>Go area by area: anything new?</h3></div>
+      <div class="catgrid">{% for a in areas %}<div class="catcell"><span class="area" style="--ac:var(--c-{{ a.color }})">{{ a.name }}</span>
+        <span class="row" style="gap:6px"><span class="muted num" style="font-weight:800">{{ a.open_count }}</span>
+        <a class="icon-btn" href="{% url 'task_new' %}?area={{ a.pk }}" hx-get="{% url 'task_new' %}?area={{ a.pk }}" hx-target="#modal" aria-label="Add a {{ a.name }} task"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></a></span></div>{% endfor %}</div></div>
+
+    <div class="step"><div class="step-h"><span class="step-n">4</span><h3>Reschedule anything overdue</h3></div>
+      {% if overdue %}<div class="list">{% for t in overdue %}
+        <form class="trow" method="post" action="{% url 'task_reschedule' t.pk %}" hx-post="{% url 'task_reschedule' t.pk %}" hx-swap="none" hx-trigger="change">{% csrf_token %}
+          <div class="tmain"><span class="ttitle">{{ t.title }}</span><span class="tmeta"><span class="area" style="--ac:var(--c-{{ t.area.color }})">{{ t.area.name }}</span><span class="due bad">Was due {{ t.due_date|day_phrase }}</span></span></div>
+          <label class="booked" for="move-{{ t.pk }}" style="font-size:13px; font-weight:700">Move to <input type="date" id="move-{{ t.pk }}" name="due_date" value="{{ t.due_date|date:'Y-m-d' }}"></label>
+          <noscript><button class="btn small" type="submit">Save</button></noscript>
+        </form>{% endfor %}</div>
+      {% else %}<span class="muted">Nothing overdue.</span>{% endif %}</div>
+
+    <div class="step"><div class="step-h"><span class="step-n">5</span><h3>Plan the first day</h3></div>
+      <div class="row"><a class="btn small" href="{% url 'plan' %}?date={{ monday|date:'Y-m-d' }}">Open {{ monday|date:"l" }}’s plan</a>
+      </div>
+      <div><button class="btn primary" type="submit" form="week-form" name="finish" value="1">Finish weekly check-in</button></div>
+    </div>
+  </div></section>
+</div>
+{% endblock %}
