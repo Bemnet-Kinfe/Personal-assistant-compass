@@ -4,6 +4,7 @@ from .views import common
 from .views import tasks
 from .views import plan
 from .views import checkins
+from .views import calendar
 
 urlpatterns = [
     path("", common.home, name="home"),
@@ -27,4 +28,5 @@ urlpatterns = [
     path("check-in/daily/finish/", checkins.finish_day, name="finish_day"),
     path("check-in/weekly/", checkins.checkin_weekly, name="checkin_weekly"),
     path("tasks/<int:pk>/reschedule/", checkins.task_reschedule, name="task_reschedule"),
+    path("settings/calendar/sync/", calendar.calendar_sync_now, name="calendar_sync"),
 ]

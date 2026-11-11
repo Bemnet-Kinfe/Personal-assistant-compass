@@ -14,6 +14,12 @@
   </div>
 
 
+  {% if next_events %}
+  <section class="section"><div class="sec-head"><h2>Next on your calendar</h2></div>
+    <div class="card list">{% for ev in next_events %}{% include "planner/partials/event_row.html" %}{% endfor %}</div>
+  </section>
+  {% endif %}
+
   {% if top3 %}
   <section class="section"><div class="sec-head"><h2>Top 3</h2></div>
     <div class="card list">{% for task in top3 %}{% include "planner/partials/task_row.html" %}{% endfor %}</div>

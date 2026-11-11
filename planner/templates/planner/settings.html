@@ -6,6 +6,20 @@
     <form method="post" action="{% url 'account_logout' %}">{% csrf_token %}<button class="btn small" type="submit">Sign out</button></form></div>
   <p class="muted" style="margin:0; font-weight:700">Signed in as {{ user.email }}</p>
 
+  <section class="card ritual">
+    <div class="ritual-top"><div><span class="eyebrow">Google Calendar</span><h2>{% if connected %}Connected{% else %}Not connected{% endif %}</h2></div>
+      {% if connected %}<form method="post" action="{% url 'calendar_sync' %}" hx-post="{% url 'calendar_sync' %}" hx-swap="none">{% csrf_token %}<button class="btn small primary" type="submit">Sync now</button></form>{% endif %}</div>
+    {% if connected %}
+      <span class="muted" style="font-weight:600">{% if sync.synced_at %}Last synced {{ sync.synced_at|timesince }} ago.{% else %}Not synced yet.{% endif %} Compass reads every calendar you have ticked in Google Calendar and adds time blocks to your own calendar in each area’s color.</span>
+      {% if sync.error_message %}<div class="issues"><li class="bad" style="list-style:none">{{ sync.error_message }}</li></div>{% endif %}
+      {% if GOOGLE_ENABLED and sync.error_code == "reconnect" %}<div><a class="btn small" href="{% provider_login_url 'google' process='connect' %}">Reconnect Google</a></div>{% endif %}
+    {% elif GOOGLE_ENABLED %}
+      <span class="muted" style="font-weight:600">Connect Google to see your events in your plan and let the assistant plan around them.</span>
+      <div><a class="btn small primary" href="{% provider_login_url 'google' process='connect' %}">Connect Google Calendar</a></div>
+    {% else %}
+      <span class="muted" style="font-weight:600">Google sign-in isn’t set up on this server yet. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to turn it on.</span>
+    {% endif %}
+  </section>
 
   <section class="card">
     <div class="ritual-top" style="padding:16px 16px 6px"><div><span class="eyebrow">Life areas</span><h2>Areas</h2></div></div>

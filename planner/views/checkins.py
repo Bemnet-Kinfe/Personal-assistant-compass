@@ -10,6 +10,7 @@ from django.views.decorators.http import require_POST
 from ..forms import WeeklyGoalForm
 from ..models import Area, DayPlan, PlanEntry, Task, WeeklyCheckIn
 from ..services import days
+from ..services import gcal
 from .common import changed, parse_date
 
 
@@ -17,6 +18,7 @@ from .common import changed, parse_date
 def checkin_daily(request):
     user, today = request.user, timezone.localdate()
     tomorrow = today + timedelta(days=1)
+    gcal.ensure_fresh(user, today, days=2)
     today_plan = DayPlan.for_date(user, today)
     tomorrow_summary = days.summarize(user, tomorrow)
     planned_today = list(Task.objects.filter(plan_entries__plan=today_plan).select_related("area"))
@@ -34,6 +36,7 @@ def checkin_daily(request):
         "top_ids": set(tomorrow_summary.plan.top_tasks.values_list("id", flat=True)),
         "open_tasks": Task.objects.filter(user=user, done=False).select_related("area")[:15],
     }
+    ctx["connected"] = gcal.is_connected(user)
     return render(request, "planner/checkin_daily.html", ctx)
 
 

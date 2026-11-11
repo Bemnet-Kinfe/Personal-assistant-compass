@@ -15,6 +15,8 @@ from django.views.decorators.http import require_GET
 
 from ..models import Task
 from ..services import days
+from ..models import CalendarEvent
+from ..services import gcal
 
 log = logging.getLogger(__name__)
 
@@ -78,6 +80,9 @@ def home(request):
         "coming_up": [t for t in open_tasks if t.due_date and today < t.due_date <= today + timedelta(days=3)],
     }
     planned = set()
+    gcal.ensure_fresh(user, today, days=3)
+    upcoming = CalendarEvent.objects.filter(user=user, end__gt=timezone.now(), start__date=today)
+    ctx["next_events"] = upcoming.select_related("area").order_by("start")[:4]
     summary = days.summarize(user, today)
     planned = {e.task_id for s in summary.slots for e in s.entries}
     ctx["summary"] = summary

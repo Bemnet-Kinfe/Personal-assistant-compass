@@ -8,6 +8,8 @@ from ..forms import AreaForm, TaskForm
 from ..models import Area, Task
 from ..models import PlanEntry
 from ..services import days
+from ..models import CalendarSync
+from ..services import gcal
 from .common import changed, is_htmx, toast_only
 from .common import parse_date
 
@@ -96,6 +98,8 @@ def settings_page(request):
         "nav": "settings",
         "areas": Area.objects.filter(user=user).annotate(task_count=Count("tasks")),
         "new_area_form": AreaForm(user=user),
+        "connected": gcal.is_connected(user),
+        "sync": CalendarSync.objects.filter(user=user).first(),
     }
     return render(request, "planner/settings.html", ctx)
 

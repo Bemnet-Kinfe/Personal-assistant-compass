@@ -9,6 +9,7 @@ A personal planning assistant for a busy student life: tasks in every area of yo
 - **Tasks and areas.** Add tasks in a pop-up with a due date, time estimate, priority and energy level. Filter by area, search, rename and recolor areas.
 - **Day plan.** Put tasks into the morning, midday, afternoon and evening. A meter shows how full each part is, and a balance check flags overbooking, forgotten deadlines, late-night deep work and days with no personal time. Star a top 3.
 - **Daily and weekly check-ins.** Close out the day, carry over what didn't happen, star tomorrow's top 3. Each week, set a goal, review deadlines and reschedule anything overdue.
+- **Google Calendar.** Events from every calendar you have ticked (including Canvas feeds and shared calendars) show up in your plan and count against your free time.
 
 ## How it's built
 
@@ -63,5 +64,15 @@ Everything is an environment variable; see [`.env.example`](.env.example).
 | `ENVIRONMENT` | `development`, `staging` or `production` (staging shows a badge) |
 | `SIGNUP_OPEN`, `ALLOWED_EMAILS` | Who may create an account |
 | `TIME_ZONE` | Your time zone, default `America/New_York` |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google sign-in and Calendar access |
+| `CALENDAR_SYNC_MINUTES` | How long a calendar copy stays fresh (default 10) |
 
+## Connecting Google Calendar
+
+1. In [Google Cloud Console](https://console.cloud.google.com), create a project and enable the **Google Calendar API**.
+2. Under **Google Auth Platform**, set up the consent screen (audience **External**), add the scopes `.../auth/calendar.readonly` and `.../auth/calendar.events`, and **Publish** the app. In testing mode, Google signs you out every 7 days.
+3. Create an OAuth client (**Web application**) with the redirect URI `https://YOUR-SITE/accounts/google/login/callback/`. Add `http://localhost:8000/accounts/google/login/callback/` for local use.
+4. Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`, then use **Settings → Connect Google Calendar**.
+
+If your school's Google Workspace blocks outside apps, share your school calendar with a personal Gmail account and connect that one instead.
 

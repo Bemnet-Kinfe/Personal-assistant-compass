@@ -155,6 +155,9 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 
+# How long synced calendar events count as fresh before Compass asks Google again.
+CALENDAR_SYNC_MINUTES = int(os.environ.get("CALENDAR_SYNC_MINUTES", "10"))
+
 # Email (password resets). Without SMTP settings, messages are written to the log.
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "")

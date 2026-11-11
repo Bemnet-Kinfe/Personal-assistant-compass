@@ -19,6 +19,13 @@
     {% if summary.issues %}<ul class="issues">{% for lvl, text in summary.issues %}<li class="{{ lvl }}">{{ text }}</li>{% endfor %}</ul>{% endif %}
   </div>
 
+  {% if not connected %}
+  <div class="card cal-note"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>
+    <span class="grow">Connect Google Calendar to see your events here.</span><a class="btn small" href="{% url 'settings' %}">Connect</a></div>
+  {% elif sync.error_message %}
+  <div class="card cal-note"><span class="grow">{{ sync.error_message }}</span>
+    <form method="post" action="{% url 'calendar_sync' %}" hx-post="{% url 'calendar_sync' %}" hx-swap="none">{% csrf_token %}<button class="btn small" type="submit">Retry</button></form></div>
+  {% endif %}
   {% if summary.all_day %}<div class="allday">{% for ev in summary.all_day %}<span style="--evc:{{ ev|event_color }}">{{ ev|event_label }} · {{ ev.title }}</span>{% endfor %}</div>{% endif %}
 
   {% for slot in summary.slots %}
