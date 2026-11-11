@@ -1,0 +1,41 @@
+{% extends "planner/base.html" %}{% load compass %}
+{% block title %}Plan · {{ APP_NAME }}{% endblock %}
+{% block content %}
+<div class="stack">
+  <div class="sec-head">
+    <div><span class="eyebrow">Plan</span><h1 style="font-size:clamp(28px,7vw,38px)">{{ date|rel_day }}</h1><span class="muted" style="font-weight:700">{{ date|date:"l, F j" }}</span></div>
+    <div class="daynav">
+      <a class="pill-link" href="?date={{ prev_day|date:'Y-m-d' }}" aria-label="Previous day">‹</a>
+      <form method="get"><label class="sr-only" for="pick-date">Go to date</label><input class="text-input" type="date" id="pick-date" name="date" value="{{ date|date:'Y-m-d' }}" onchange="this.form.requestSubmit()" style="padding:7px 10px"></form>
+      <a class="pill-link" href="?date={{ next_day|date:'Y-m-d' }}" aria-label="Next day">›</a>
+    </div>
+  </div>
+  <div class="seg" role="group" aria-label="This week" style="overflow-x:auto; max-width:100%">
+    {% for d in day_choices %}<a href="?date={{ d|date:'Y-m-d' }}" style="text-decoration:none; padding:7px 12px; border-radius:11px; font-weight:800; {% if d == date %}background:var(--ink); color:#fff{% else %}color:var(--muted){% endif %}" {% if d == date %}aria-current="date"{% endif %}>{% if d == today %}Today{% else %}{{ d|date:"D j" }}{% endif %}</a>{% endfor %}
+  </div>
+
+  <div class="card health">
+    <div class="health-top"><span class="verdict {{ summary.verdict }}"><i></i>{{ summary.word }}</span><span class="muted num" style="font-weight:700; font-size:13.5px">{{ summary.used|mins }} of {{ summary.capacity|mins }} filled</span></div>
+    {% if summary.issues %}<ul class="issues">{% for lvl, text in summary.issues %}<li class="{{ lvl }}">{{ text }}</li>{% endfor %}</ul>{% endif %}
+  </div>
+
+  {% if summary.all_day %}<div class="allday">{% for ev in summary.all_day %}<span style="--evc:{{ ev|event_color }}">{{ ev|event_label }} · {{ ev.title }}</span>{% endfor %}</div>{% endif %}
+
+  {% for slot in summary.slots %}
+  <section class="card slot" aria-labelledby="slot-{{ slot.key }}">
+    <div class="slot-head">
+      <div><h3 id="slot-{{ slot.key }}"><i style="background:var(--slot-{{ slot.key }})"></i>{{ slot.name }}</h3><span class="slot-range">{{ slot.range }}</span></div>
+      <div class="meter"><div class="bar"><span class="{{ slot.state }}" style="width:{{ slot.percent }}%"></span></div>
+        <div class="lbl"><span class="num">{{ slot.used|mins }} / {{ slot.capacity|mins }}</span>{% if slot.event_minutes %}<span>{{ slot.event_minutes|mins }} on calendar</span>{% endif %}</div></div>
+    </div>
+    {% if slot.events or slot.entries %}
+    <div class="list">
+      {% for ev in slot.events %}{% include "planner/partials/event_row.html" %}{% endfor %}
+      {% for entry in slot.entries %}{% with task=entry.task %}{% include "planner/partials/task_row.html" %}{% endwith %}{% endfor %}
+    </div>
+    {% endif %}
+    <div class="slot-foot"><a class="addslot" style="display:block; text-align:center; text-decoration:none" href="{% url 'plan_pick' date|date:'Y-m-d' slot.key %}" hx-get="{% url 'plan_pick' date|date:'Y-m-d' slot.key %}" hx-target="#modal">+ Add to {{ slot.name|lower }}</a></div>
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}

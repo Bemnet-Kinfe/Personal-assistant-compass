@@ -14,6 +14,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_GET
 
 from ..models import Task
+from ..services import days
 
 log = logging.getLogger(__name__)
 
@@ -77,6 +78,10 @@ def home(request):
         "coming_up": [t for t in open_tasks if t.due_date and today < t.due_date <= today + timedelta(days=3)],
     }
     planned = set()
+    summary = days.summarize(user, today)
+    planned = {e.task_id for s in summary.slots for e in s.entries}
+    ctx["summary"] = summary
+    ctx["top3"] = summary.plan.top_tasks.select_related("area")
     ctx["due_now"] = [t for t in open_tasks if t.due_date and t.due_date <= today and t.id not in planned]
     return render(request, "planner/home.html", ctx)
 

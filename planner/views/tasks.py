@@ -6,7 +6,10 @@ from django.views.decorators.http import require_POST
 
 from ..forms import AreaForm, TaskForm
 from ..models import Area, Task
+from ..models import PlanEntry
+from ..services import days
 from .common import changed, is_htmx, toast_only
+from .common import parse_date
 
 
 @login_required
@@ -55,6 +58,9 @@ def _task_form(request, task, initial):
         obj = form.save(commit=False)
         obj.user = request.user
         obj.save()
+        plan_date = parse_date(request.POST.get("plan_date"))
+        if plan_date and request.POST.get("plan_slot") in dict(PlanEntry.SLOT_CHOICES):
+            days.plan_task(request.user, obj, plan_date, request.POST["plan_slot"])
         return changed(request, "Saved" if task else "Added", "tasks")
     ctx = {
         "form": form,

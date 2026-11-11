@@ -5,12 +5,35 @@
     <span class="date">{{ today|date:"l, F j" }}</span>
     <h1>{{ greeting }}{% if user.first_name %}, {{ user.first_name }}{% endif %}</h1>
     <div class="stats">
+      <div class="stat"><b class="num">{{ summary.planned_count }}</b><span>planned</span></div>
       <div class="stat"><b class="num">{{ open_count }}</b><span>open tasks</span></div>
       <div class="stat"><b class="num">{{ done_today }}</b><span>done today</span></div>
       <div class="stat"><b class="num">{{ due_now|length }}</b><span>due now</span></div>
+      <div class="stat"><b>{{ summary.word }}</b><span>today’s balance</span></div>
     </div>
   </div>
 
+
+  {% if top3 %}
+  <section class="section"><div class="sec-head"><h2>Top 3</h2></div>
+    <div class="card list">{% for task in top3 %}{% include "planner/partials/task_row.html" %}{% endfor %}</div>
+  </section>
+  {% endif %}
+
+  <section class="section"><div class="sec-head"><h2>Today</h2><a class="btn small" href="{% url 'plan' %}">Open plan</a></div>
+    {% if summary.planned_count %}
+    <div class="card list">
+      {% for slot in summary.slots %}{% if slot.entries %}
+      <div class="dayhead">{{ slot.name }} · {{ slot.range }}</div>
+      {% for entry in slot.entries %}{% with task=entry.task %}{% include "planner/partials/task_row.html" %}{% endwith %}{% endfor %}
+      {% endif %}{% endfor %}
+    </div>
+    {% else %}
+    <div class="card empty"><b>Nothing planned yet</b><span>Add tasks to each part of your day{% if ai_on %}, or ask your assistant to plan it around your calendar{% endif %}.</span>
+      <div class="row">{% if ai_on %}<button class="btn small primary" type="button" data-suggest="Plan my day">Plan my day</button>{% endif %}<a class="btn small" href="{% url 'plan' %}">Plan it myself</a></div>
+    </div>
+    {% endif %}
+  </section>
 
   {% if due_now %}
   <section class="section"><div class="sec-head"><h2>Due now{% if summary %}, not planned{% endif %}</h2></div>
