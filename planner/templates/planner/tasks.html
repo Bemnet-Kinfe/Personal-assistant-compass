@@ -1,0 +1,25 @@
+{% extends "planner/base.html" %}
+{% block title %}Tasks · {{ APP_NAME }}{% endblock %}
+{% block content %}
+<div class="stack">
+  <div><span class="eyebrow">Tasks</span><h1 style="font-size:clamp(28px,7vw,38px)">{% if area %}{{ area.name }}{% else %}Everything{% endif %}</h1></div>
+  <nav class="areas" aria-label="Areas">
+    <a class="areabtn" style="--ac:var(--ink); text-decoration:none" href="{% url 'tasks' %}{% if show_done %}?done=1{% endif %}" {% if not area %}aria-pressed="true"{% endif %}><b>All</b><span class="num">{{ open_total }} open</span></a>
+    {% for a in areas %}<a class="areabtn" style="--ac:var(--c-{{ a.color }}); text-decoration:none" href="?area={{ a.pk }}{% if show_done %}&done=1{% endif %}" {% if area.pk == a.pk %}aria-pressed="true"{% endif %}><b>{{ a.name }}</b><span class="num">{{ a.open_count }} open</span></a>{% endfor %}
+  </nav>
+  <form class="row" method="get" style="justify-content:space-between">
+    {% if area %}<input type="hidden" name="area" value="{{ area.pk }}">{% endif %}
+    <label class="sr-only" for="q">Search tasks</label>
+    <input class="text-input grow" type="search" id="q" name="q" value="{{ q }}" placeholder="Search tasks" style="max-width:320px">
+    <label class="row" for="show-done" style="gap:6px; font-size:14px; font-weight:700"><input type="checkbox" id="show-done" name="done" value="1" {% if show_done %}checked{% endif %} onchange="this.form.requestSubmit()"> Show done</label>
+    <a class="btn small" href="{% url 'task_new' %}{% if area %}?area={{ area.pk }}{% endif %}" hx-get="{% url 'task_new' %}{% if area %}?area={{ area.pk }}{% endif %}" hx-target="#modal">+ Add{% if area %} to {{ area.name }}{% endif %}</a>
+  </form>
+  {% if not has_tasks %}
+  <div class="card empty"><b>No tasks yet</b><span>Add your first task with the + button.</span></div>
+  {% elif task_list %}
+  <div class="card list">{% for task in task_list %}{% include "planner/partials/task_row.html" with hide_area=area %}{% endfor %}</div>
+  {% else %}
+  <div class="card empty">{% if q %}No tasks match “{{ q }}”.{% else %}Nothing open here. Nice.{% endif %}</div>
+  {% endif %}
+</div>
+{% endblock %}

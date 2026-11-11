@@ -1,0 +1,25 @@
+{% load compass %}<div class="trow {% if task.done %}done{% endif %}" style="--cc:var(--c-{{ task.area.color }})">
+  <form method="post" action="{% url 'task_toggle' task.pk %}" hx-post="{% url 'task_toggle' task.pk %}" hx-swap="none">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+    <button class="check" type="submit" aria-label="{% if task.done %}Mark not done{% else %}Mark done{% endif %}: {{ task.title }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+  </form>
+  <a class="tmain" href="{% url 'task_edit' task.pk %}" hx-get="{% url 'task_edit' task.pk %}" hx-target="#modal" style="text-decoration:none">
+    <span class="ttitle">{{ task.title }}</span>
+    <span class="tmeta">
+      {% if not hide_area %}<span class="area" style="--ac:var(--c-{{ task.area.color }})">{{ task.area.name }}</span>{% endif %}
+      {% if task.due_date %}<span class="due {{ task|due_state }}">{% if task|due_state == "bad" %}Overdue · {{ task.due_date|rel_day }}{% else %}{{ task.due_date|due_text }}{% endif %}</span>{% endif %}
+      <span class="num">{{ task.minutes|mins }}</span>
+      {% if task.energy == "deep" %}<span>Deep focus</span>{% endif %}
+      {% if task.priority == "high" %}<span class="due warn">High</span>{% endif %}
+    </span>
+  </a>
+  {% if entry %}
+  <form method="post" action="{% url 'plan_remove' entry.pk %}" hx-post="{% url 'plan_remove' entry.pk %}" hx-swap="none">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+    <button class="icon-btn" type="submit" aria-label="Take {{ task.title }} off the plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </form>
+  {% elif star_date %}
+  <form method="post" action="{% url 'plan_star' %}" hx-post="{% url 'plan_star' %}" hx-swap="none">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><input type="hidden" name="date" value="{{ star_date|date:'Y-m-d' }}"><input type="hidden" name="task" value="{{ task.pk }}">
+    {% is_top task top_ids as starred %}
+    <button class="icon-btn {% if starred %}on{% endif %}" type="submit" aria-label="{% if starred %}Remove from{% else %}Add to{% endif %} top 3: {{ task.title }}">{% if starred %}<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/></svg>{% else %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/></svg>{% endif %}</button>
+  </form>
+  {% endif %}
+</div>

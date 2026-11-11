@@ -1,0 +1,13 @@
+<div class="modal-wrap">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="task-sheet-title">
+    <form method="post" action="{% if task %}{% url 'task_edit' task.pk %}{% else %}{% url 'task_new' %}{% endif %}"
+          hx-post="{% if task %}{% url 'task_edit' task.pk %}{% else %}{% url 'task_new' %}{% endif %}" hx-target="#modal" class="stack" style="gap:14px">
+      <h2 id="task-sheet-title">{% if task %}Edit task{% else %}New task{% endif %}</h2>
+      {% include "planner/partials/task_fields.html" %}
+      <div class="sheet-actions">
+        <div class="row">{% if task %}<button type="submit" class="btn danger" formaction="{% url 'task_delete' task.pk %}" hx-post="{% url 'task_delete' task.pk %}" hx-confirm="Delete “{{ task.title }}” for good?" hx-swap="none">Delete</button>{% endif %}</div>
+        <div class="row"><button type="button" class="btn" data-close-modal>Cancel</button><button type="submit" class="btn primary">Save task</button></div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+{% extends "planner/base.html" %}
+{% block title %}{% if task %}Edit task{% else %}New task{% endif %} · {{ APP_NAME }}{% endblock %}
+{% block content %}
+<div class="card" style="padding:18px; max-width:560px">
+  <form method="post" class="stack" style="gap:14px">
+    <h1 style="font-size:26px">{% if task %}Edit task{% else %}New task{% endif %}</h1>
+    {% include "planner/partials/task_fields.html" %}
+    <div class="sheet-actions"><a class="btn" href="{% url 'tasks' %}">Cancel</a><button type="submit" class="btn primary">Save task</button></div>
+  </form>
+  {% if task %}<form method="post" action="{% url 'task_delete' task.pk %}" style="margin-top:10px">{% csrf_token %}<button class="btn danger" type="submit">Delete task</button></form>{% endif %}
+</div>
+{% endblock %}

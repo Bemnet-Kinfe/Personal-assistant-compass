@@ -1,0 +1,21 @@
+{% csrf_token %}
+{% if form.non_field_errors %}{{ form.non_field_errors }}{% endif %}
+<input type="hidden" name="plan_date" value="{{ plan_date }}">
+<input type="hidden" name="plan_slot" value="{{ plan_slot }}">
+<div class="field">{{ form.title.label_tag }}{{ form.title }}{{ form.title.errors }}</div>
+<div class="grid2">
+  <div class="field">{{ form.area.label_tag }}{{ form.area }}{{ form.area.errors }}</div>
+  <div class="field">{{ form.due_date.label_tag }}{{ form.due_date }}{{ form.due_date.errors }}</div>
+</div>
+<div class="field">{{ form.minutes.label_tag }}
+  <div class="row"><span style="max-width:110px">{{ form.minutes }}</span>
+    <div class="minchips">{% for m, l in minute_chips %}{% endfor %}<button type="button" data-minutes="15">15</button><button type="button" data-minutes="30">30</button><button type="button" data-minutes="60">1h</button><button type="button" data-minutes="90">1.5h</button><button type="button" data-minutes="120">2h</button><button type="button" data-minutes="180">3h</button></div>
+  </div>{{ form.minutes.errors }}
+</div>
+<div class="field"><span class="lab">Priority</span>
+  <div class="radios">{% for r in form.priority %}<label for="{{ r.id_for_label }}">{{ r.tag }}<span>{{ r.choice_label }}</span></label>{% endfor %}</div>
+</div>
+<div class="field"><span class="lab">Energy</span>
+  <div class="radios">{% for r in form.energy %}<label for="{{ r.id_for_label }}">{{ r.tag }}<span>{{ r.choice_label }}</span></label>{% endfor %}</div>
+</div>
+<div class="field">{{ form.notes.label_tag }}{{ form.notes }}{{ form.notes.errors }}</div>
