@@ -1,0 +1,78 @@
+# Render Blueprint: two public environments, each with its own database.
+#   staging     deploys automatically on every merge to `main`
+#   production  deploys only when you promote: merge `main` into the `production` branch
+# New > Blueprint, pick this repo, then fill in the values marked sync: false for each service.
+services:
+  - type: web
+    name: compass-staging
+    runtime: python
+    plan: free
+    branch: main
+    autoDeploy: true
+    buildCommand: ./build.sh
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --access-logfile -
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: ENVIRONMENT
+        value: staging
+      - key: SECRET_KEY
+        generateValue: true
+      - key: TIME_ZONE
+        value: America/New_York
+      - key: AI_MODEL
+        value: google/gemma-4-31b-it:free
+      - key: AI_DAILY_LIMIT
+        value: "45"
+      - key: DATABASE_URL
+        sync: false   # staging database (for example a Neon "staging" branch)
+      - key: DEMO_PASSWORD
+        sync: false
+      - key: OWNER_EMAIL
+        sync: false
+      - key: ALLOWED_EMAILS
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+
+  - type: web
+    name: compass
+    runtime: python
+    plan: free
+    branch: production
+    autoDeploy: true
+    buildCommand: ./build.sh
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --access-logfile -
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: ENVIRONMENT
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: TIME_ZONE
+        value: America/New_York
+      - key: AI_MODEL
+        value: google/gemma-4-31b-it:free
+      - key: AI_DAILY_LIMIT
+        value: "45"
+      - key: DATABASE_URL
+        sync: false   # production database (a separate Neon branch or project)
+      - key: DEMO_PASSWORD
+        sync: false
+      - key: OWNER_EMAIL
+        sync: false
+      - key: ALLOWED_EMAILS
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false

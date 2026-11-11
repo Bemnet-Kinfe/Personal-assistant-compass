@@ -1,0 +1,22 @@
+name: Promote to production
+
+# The deliberate step: run this by hand (Actions > Promote to production > Run workflow)
+# after checking staging. It fast-forwards `production` to `main`, and Render deploys it.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fast-forward production to main
+        run: |
+          git fetch origin main
+          # Not forced: if production ever gets commits main doesn't have, this fails instead of losing them.
+          git push origin origin/main:refs/heads/production
