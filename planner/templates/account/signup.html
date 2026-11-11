@@ -1,0 +1,18 @@
+{% extends "allauth/layouts/base.html" %}{% load socialaccount %}
+{% block head_title %}Create an account{% endblock %}
+{% block content %}
+<h1 style="font-size:28px">Create your Compass</h1>
+{% if GOOGLE_ENABLED %}
+<a class="btn primary" href="{% provider_login_url 'google' %}">Continue with Google</a>
+<div class="divider">or with email</div>
+{% endif %}
+<form method="post" action="{% url 'account_signup' %}" class="stack" style="gap:12px">{% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="field"><label for="id_email">Email</label>{{ form.email }}{{ form.email.errors }}</div>
+  <div class="field"><label for="id_password1">Password</label>{{ form.password1 }}{{ form.password1.errors }}</div>
+  <div class="field"><label for="id_password2">Password again</label>{{ form.password2 }}{{ form.password2.errors }}</div>
+  {% if redirect_field_value %}<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">{% endif %}
+  <button class="btn dark" type="submit">Create account</button>
+</form>
+<p style="margin:0; font-size:14px; font-weight:700">Already have one? <a href="{% url 'account_login' %}">Sign in</a></p>
+{% endblock %}

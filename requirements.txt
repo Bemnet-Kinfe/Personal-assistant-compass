@@ -1,0 +1,7 @@
+Django>=5.1,<5.2
+django-allauth[socialaccount]>=65,<66
+dj-database-url>=2.2
+psycopg[binary]>=3.2
+gunicorn>=23
+whitenoise>=6.7
+requests>=2.32

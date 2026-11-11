@@ -1,0 +1,33 @@
+{% extends "planner/base.html" %}{% load compass %}
+{% block content %}
+<div class="stack">
+  <div class="hello">
+    <span class="date">{{ today|date:"l, F j" }}</span>
+    <h1>{{ greeting }}{% if user.first_name %}, {{ user.first_name }}{% endif %}</h1>
+    <div class="stats">
+      <div class="stat"><b class="num">{{ open_count }}</b><span>open tasks</span></div>
+      <div class="stat"><b class="num">{{ done_today }}</b><span>done today</span></div>
+      <div class="stat"><b class="num">{{ due_now|length }}</b><span>due now</span></div>
+    </div>
+  </div>
+
+
+  {% if due_now %}
+  <section class="section"><div class="sec-head"><h2>Due now{% if summary %}, not planned{% endif %}</h2></div>
+    <div class="card list">{% for task in due_now %}{% include "planner/partials/task_row.html" %}{% endfor %}</div>
+  </section>
+  {% endif %}
+
+  {% if coming_up %}
+  <section class="section"><div class="sec-head"><h2>Coming up</h2><span class="eyebrow">Next 3 days</span></div>
+    <div class="card list">{% for task in coming_up %}{% include "planner/partials/task_row.html" %}{% endfor %}</div>
+  </section>
+  {% endif %}
+
+  {% if not has_tasks %}
+  <div class="card empty"><b>Welcome to {{ APP_NAME }}</b>
+    <span>Add your first task to get started. Every task belongs to an area of your life, like Class or Lab work{% if user.is_authenticated %}, which you can rename in Settings{% endif %}.</span>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

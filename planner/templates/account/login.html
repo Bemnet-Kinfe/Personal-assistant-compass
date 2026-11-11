@@ -1,0 +1,22 @@
+{% extends "allauth/layouts/base.html" %}{% load socialaccount %}
+{% block head_title %}Sign in{% endblock %}
+{% block content %}
+<h1 style="font-size:28px">Your day, pointed in the right direction.</h1>
+<p class="muted" style="margin:0; font-weight:600">Sign in to see your plan.</p>
+{% if GOOGLE_ENABLED %}
+<a class="btn primary" href="{% provider_login_url 'google' %}">Continue with Google</a>
+<div class="divider">or with email</div>
+{% endif %}
+<form method="post" action="{% url 'account_login' %}" class="stack" style="gap:12px">{% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="field"><label for="id_login">Email</label>{{ form.login }}{{ form.login.errors }}</div>
+  <div class="field"><label for="id_password">Password</label>{{ form.password }}{{ form.password.errors }}</div>
+  <label class="row" for="id_remember" style="gap:6px; font-weight:700; font-size:14px">{{ form.remember }} Keep me signed in</label>
+  {% if redirect_field_value %}<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">{% endif %}
+  <button class="btn dark" type="submit">Sign in</button>
+</form>
+<div class="row" style="justify-content:space-between; font-size:14px; font-weight:700">
+  <a href="{% url 'account_reset_password' %}">Forgot password?</a>
+  {% if SIGNUP_OPEN %}<a href="{% url 'account_signup' %}">Create an account</a>{% endif %}
+</div>
+{% endblock %}

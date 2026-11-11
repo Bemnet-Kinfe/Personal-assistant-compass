@@ -1,0 +1,12 @@
+[tool.ruff]
+line-length = 140
+target-version = "py312"
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B"]
+ignore = ["B904"]
+
+[tool.ruff.lint.per-file-ignores]
+# The assistant prompt is prose; wrapping it would change what the model reads.
+"planner/services/assistant.py" = ["E501"]

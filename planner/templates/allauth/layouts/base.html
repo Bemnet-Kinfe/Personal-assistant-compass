@@ -1,0 +1,14 @@
+{% extends "planner/base.html" %}
+{% comment %}Every allauth page (password reset, sign-out, connections…) uses Compass's layout without the app tabs.{% endcomment %}
+{% block title %}{% block head_title %}{% endblock %} · {{ APP_NAME }}{% endblock %}
+{% block body %}
+<div class="app">
+  <div class="auth">
+    <a class="brand" href="{% url 'home' %}" style="text-decoration:none"><span class="dot" aria-hidden="true"></span>{{ APP_NAME }}</a>
+    {% if messages %}<div class="messages">{% for m in messages %}<div class="banner" role="status">{{ m }}</div>{% endfor %}</div>{% endif %}
+    <div class="card" style="padding:20px; display:flex; flex-direction:column; gap:12px">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}
