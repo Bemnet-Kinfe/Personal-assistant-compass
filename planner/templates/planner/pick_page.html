@@ -1,0 +1,8 @@
+{% extends "planner/base.html" %}{% load compass %}
+{% block content %}
+<div class="stack">
+  <h1 style="font-size:26px">Add to {{ slot.1|lower }}, {{ date|day_phrase }}</h1>
+  <div class="card">{% include "planner/partials/pick_list.html" %}</div>
+  <a class="btn" href="{% url 'plan' %}?date={{ date|date:'Y-m-d' }}">Back to the plan</a>
+</div>
+{% endblock %}

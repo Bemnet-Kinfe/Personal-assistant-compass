@@ -1,0 +1,14 @@
+{% load compass %}
+{% if pool %}
+<div class="picklist">
+  {% for t in pool %}
+  <form method="post" action="{% url 'plan_add' %}" hx-post="{% url 'plan_add' %}" hx-swap="none">{% csrf_token %}
+    <input type="hidden" name="task" value="{{ t.pk }}"><input type="hidden" name="date" value="{{ date|date:'Y-m-d' }}"><input type="hidden" name="slot" value="{{ slot.0 }}"><input type="hidden" name="next" value="{% url 'plan' %}?date={{ date|date:'Y-m-d' }}">
+    <button type="submit" style="width:100%"><span class="ttitle">{{ t.title }}</span>
+      <span class="tmeta"><span class="area" style="--ac:var(--c-{{ t.area.color }})">{{ t.area.name }}</span>{% if t.due_date %}<span class="due {{ t|due_state }}">{{ t.due_date|due_text }}</span>{% endif %}<span class="num">{{ t.minutes|mins }}</span>{% if t.energy == "deep" %}<span>Deep focus</span>{% endif %}</span></button>
+  </form>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty">Every open task is already on this day.</div>
+{% endif %}

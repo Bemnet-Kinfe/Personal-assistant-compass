@@ -1,0 +1,5 @@
+{% load compass %}<{% if ev.html_link %}a href="{{ ev.html_link }}" target="_blank" rel="noopener"{% else %}div{% endif %} class="ev {% if ev.is_free %}free{% endif %}" style="--evc:{{ ev|event_color }}">
+  <span class="ev-time">{{ ev.start|time:"g:i A" }}–{{ ev.end|time:"g:i A" }}</span>
+  <span class="ev-title">{{ ev.title }}</span>
+  <span class="ev-badge">{{ ev|event_label }}</span>
+</{% if ev.html_link %}a{% else %}div{% endif %}>
