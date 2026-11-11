@@ -10,6 +10,7 @@ A personal planning assistant for a busy student life: tasks in every area of yo
 - **Day plan.** Put tasks into the morning, midday, afternoon and evening. A meter shows how full each part is, and a balance check flags overbooking, forgotten deadlines, late-night deep work and days with no personal time. Star a top 3.
 - **Daily and weekly check-ins.** Close out the day, carry over what didn't happen, star tomorrow's top 3. Each week, set a goal, review deadlines and reschedule anything overdue.
 - **Google Calendar.** Events from every calendar you have ticked (including Canvas feeds and shared calendars) show up in your plan and count against your free time.
+- **Assistant.** Ask it to plan your day or week. It replies with a checklist of proposed changes, such as adding tasks, placing them, setting a top 3 or blocking time on Google Calendar. Nothing happens until you tap **Do it**.
 
 ## How it's built
 
@@ -19,6 +20,7 @@ A personal planning assistant for a busy student life: tasks in every area of yo
 | Database | PostgreSQL (SQLite works for quick local runs) |
 | Accounts | Django auth via django-allauth (email + password, optional Google) |
 | Interface | Server-rendered templates, [htmx](https://htmx.org) for updates without page reloads, hand-written responsive CSS |
+| AI | OpenRouter, called only from the server |
 | Hosting | Any 12-factor host |
 | CI | GitHub Actions: ruff, a migrations check and the tests on PostgreSQL |
 
@@ -66,6 +68,8 @@ Everything is an environment variable; see [`.env.example`](.env.example).
 | `TIME_ZONE` | Your time zone, default `America/New_York` |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` | Google sign-in and Calendar access |
 | `CALENDAR_SYNC_MINUTES` | How long a calendar copy stays fresh (default 10) |
+| `OPENROUTER_API_KEY`, `AI_MODEL`, `AI_FALLBACK_MODELS` | The assistant's model and backups |
+| `AI_DAILY_LIMIT` | Assistant requests per person per day (default 45) |
 
 ## Connecting Google Calendar
 

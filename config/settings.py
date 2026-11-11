@@ -154,6 +154,11 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+# --- Assistant: OpenRouter, called only from the server ---
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+AI_MODEL = os.environ.get("AI_MODEL", "google/gemma-4-31b-it:free")
+AI_FALLBACK_MODELS = env_list("AI_FALLBACK_MODELS", "nvidia/nemotron-3-super-120b-a12b:free")
+AI_DAILY_LIMIT = int(os.environ.get("AI_DAILY_LIMIT", "45"))
 
 # How long synced calendar events count as fresh before Compass asks Google again.
 CALENDAR_SYNC_MINUTES = int(os.environ.get("CALENDAR_SYNC_MINUTES", "10"))

@@ -88,6 +88,9 @@ def home(request):
     ctx["summary"] = summary
     ctx["top3"] = summary.plan.top_tasks.select_related("area")
     ctx["due_now"] = [t for t in open_tasks if t.due_date and t.due_date <= today and t.id not in planned]
+    from .assistant import chat_context
+
+    ctx.update(chat_context(user))
     return render(request, "planner/home.html", ctx)
 
 

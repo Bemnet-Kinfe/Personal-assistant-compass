@@ -61,3 +61,5 @@ class WeeklyGoalForm(forms.ModelForm):
         }
 
 
+class AskForm(forms.Form):
+    text = forms.CharField(max_length=1500, strip=True)

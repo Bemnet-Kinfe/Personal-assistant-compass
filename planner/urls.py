@@ -5,6 +5,7 @@ from .views import tasks
 from .views import plan
 from .views import checkins
 from .views import calendar
+from .views import assistant
 
 urlpatterns = [
     path("", common.home, name="home"),
@@ -29,4 +30,8 @@ urlpatterns = [
     path("check-in/weekly/", checkins.checkin_weekly, name="checkin_weekly"),
     path("tasks/<int:pk>/reschedule/", checkins.task_reschedule, name="task_reschedule"),
     path("settings/calendar/sync/", calendar.calendar_sync_now, name="calendar_sync"),
+    path("assistant/ask/", assistant.assistant_ask, name="assistant_ask"),
+    path("assistant/<int:pk>/apply/", assistant.assistant_apply, name="assistant_apply"),
+    path("assistant/<int:pk>/skip/", assistant.assistant_skip, name="assistant_skip"),
+    path("assistant/clear/", assistant.assistant_clear, name="assistant_clear"),
 ]
